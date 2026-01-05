@@ -1,11 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
+
+
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::middleware(['auth', 'verified'])->get('/home', [HomeController::class, 'index'])
-    ->name('home');
+Route::get('/app', function () {
+    return view('app');
+});

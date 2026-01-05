@@ -8,13 +8,27 @@ use Illuminate\Http\Request;
 class TaskController extends Controller
 {
     /**
-     * Listar tarefas
+     * Listar tarefas com filtros
      */
-    public function index()
+    public function index(Request $request)
     {
-        $tasks = Task::orderBy('created_at', 'desc')->get();
+        $query = Task::query();
 
-        return response()->json($tasks);
+        if ($request->has('completed') && $request->completed !== '') {
+            $query->where('is_completed', $request->boolean('completed'));
+        }
+
+        if ($request->priority) {
+            $query->where('priority', $request->priority);
+        }
+
+        if ($request->due_date) {
+            $query->whereDate('due_date', $request->due_date);
+        }
+
+        return response()->json(
+            $query->orderBy('created_at', 'desc')->get()
+        );
     }
 
     /**

@@ -1,92 +1,96 @@
 <template>
   <div class="min-h-screen bg-gray-100 p-6">
-    <div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
+    <div class="max-w-2xl mx-auto bg-white rounded shadow p-6">
 
-      <h1 class="text-2xl font-bold mb-4 text-center">
-        📝 To-Do App
-      </h1>
+      <h1 class="text-3xl font-bold mb-6 text-center">📝 To-Do App</h1>
 
-      <!-- Formulário -->
-      <form @submit.prevent="createTask" class="mb-6 space-y-3">
-        <input
-          v-model="form.title"
-          type="text"
-          placeholder="Título da tarefa"
-          class="w-full border rounded px-3 py-2"
-          required
-        />
+      <TaskForm
+        :model-value="form"
+        :editing-task="editingTask"
+        @submit="submitTask"
+      />
 
-        <select
-          v-model="form.priority"
-          class="w-full border rounded px-3 py-2"
-        >
-          <option value="low">Baixa</option>
-          <option value="medium">Média</option>
-          <option value="high">Alta</option>
-        </select>
+      <TaskFilters v-model="filters" />
 
-        <button
-          type="submit"
-          class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-        >
-          Adicionar
-        </button>
-      </form>
+      <TaskList
+        :tasks="tasks"
+        @toggle="toggleTask"
+        @edit="editTask"
+        @delete="deleteTask"
+        @show-details="selectedTask = $event"
+      />
 
-      <!-- Lista de tarefas -->
-      <ul v-if="tasks.length">
-        <li
-          v-for="task in tasks"
-          :key="task.id"
-          class="border-b py-2 flex justify-between"
-        >
-          <span>
-            {{ task.title }}
-            <small class="text-gray-500">
-              ({{ task.priority }})
-            </small>
-          </span>
-        </li>
-      </ul>
-
-      <p v-else class="text-center text-gray-500">
-        Nenhuma tarefa encontrada.
-      </p>
+      <TaskDetailsModal
+        v-if="selectedTask"
+        :task="selectedTask"
+        @close="selectedTask = null"
+      />
 
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, getCurrentInstance } from 'vue';
+import { ref, onMounted, getCurrentInstance } from 'vue'
 
-const { appContext } = getCurrentInstance();
-const axios = appContext.config.globalProperties.$axios;
+import TaskForm from './TaskForm.vue'
+import TaskFilters from './TaskFilters.vue'
+import TaskList from './TaskList.vue'
+import TaskDetailsModal from './TaskDetailsModal.vue'
 
-// estado
-const tasks = ref([]);
+const { appContext } = getCurrentInstance()
+const axios = appContext.config.globalProperties.$axios
+
+const tasks = ref([])
+const selectedTask = ref(null)
+const editingTask = ref(null)
 
 const form = ref({
   title: '',
+  description: '',
   priority: 'medium',
-});
+  due_date: '',
+})
 
-// buscar tarefas
+const filters = ref({
+  completed: '',
+  priority: '',
+  due_date: '',
+})
+
 const fetchTasks = async () => {
-  const response = await axios.get('/tasks');
-  tasks.value = response.data;
-};
+  const { data } = await axios.get('/tasks', { params: filters.value })
+  tasks.value = data
+}
 
-// criar tarefa
-const createTask = async () => {
-  await axios.post('/tasks', form.value);
+const submitTask = async (payload) => {
+  if (editingTask.value) {
+    await axios.put(`/tasks/${editingTask.value.id}`, payload)
+    editingTask.value = null
+  } else {
+    await axios.post('/tasks', payload)
+  }
 
-  form.value.title = '';
-  form.value.priority = 'medium';
+  form.value = { title: '', description: '', priority: 'medium', due_date: '' }
+  fetchTasks()
+}
 
-  fetchTasks();
-};
+const editTask = (task) => {
+  editingTask.value = task
+  form.value = { ...task }
+}
 
-// quando o componente carrega
-onMounted(fetchTasks);
+const deleteTask = async (task) => {
+  if (confirm('Tens a certeza que queres apagar esta tarefa?')) {
+    await axios.delete(`/tasks/${task.id}`)
+    fetchTasks()
+  }
+}
+
+const toggleTask = async (task) => {
+  await axios.patch(`/tasks/${task.id}/toggle`)
+  fetchTasks()
+}
+
+onMounted(fetchTasks)
 </script>

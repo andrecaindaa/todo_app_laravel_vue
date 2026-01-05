@@ -1,14 +1,12 @@
-import './bootstrap';
-import { createApp } from 'vue';
-import axios from 'axios';
-import TaskApp from './components/TaskApp.vue';
+import './bootstrap'
+import { createApp } from 'vue'
+import axios from 'axios'
+import TaskApp from './components/TaskApp.vue'
 
-// base URL da API
-axios.defaults.baseURL = 'http://127.0.0.1:8000';
+axios.defaults.baseURL = '/api'
 
-const app = createApp(TaskApp);
+const app = createApp(TaskApp)
 
-// tornar axios disponível em todos os componentes
-app.config.globalProperties.$axios = axios;
+app.config.globalProperties.$axios = axios
 
-app.mount('#app');
+app.mount('#app')
