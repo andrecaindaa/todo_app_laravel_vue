@@ -19,9 +19,18 @@
     </div>
 
     <div class="flex gap-3 mt-3 md:mt-0">
-      <button @click.stop="$emit('toggle', task)" class="text-sm text-blue-600 hover:underline">
-        ✔
-      </button>
+      <label class="flex items-center gap-2 cursor-pointer">
+  <input
+    type="checkbox"
+    :checked="task.is_completed"
+    @change="$emit('toggle', task)"
+    class="w-4 h-4"
+  />
+  <span class="text-sm text-gray-600">
+    {{ task.is_completed ? 'Concluída' : 'Pendente' }}
+  </span>
+</label>
+
 
       <button @click.stop="$emit('edit', task)" class="text-sm text-yellow-600 hover:underline">
         Editar

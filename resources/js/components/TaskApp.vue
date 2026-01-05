@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, getCurrentInstance } from 'vue'
+import { ref, onMounted, getCurrentInstance, watch } from 'vue'
 
 import TaskForm from './TaskForm.vue'
 import TaskFilters from './TaskFilters.vue'
@@ -57,6 +57,13 @@ const filters = ref({
   priority: '',
   due_date: '',
 })
+
+watch(filters, () => {
+  fetchTasks()
+}, { deep: true })
+
+
+
 
 const fetchTasks = async () => {
   const { data } = await axios.get('/tasks', { params: filters.value })
