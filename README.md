@@ -4,13 +4,32 @@ Aplicação web para gestão de tarefas desenvolvida com Laravel 12,
 Vue 3 e Tailwind CSS.
 
 ## 🚀 Funcionalidades
-- Criar tarefas com título, descrição, prioridade e data
-- Editar e remover tarefas
-- Marcar tarefas como concluídas
-- Filtrar por estado, prioridade e data
+- Criação de tarefas com:
+  - Título
+  - Descrição
+  - Prioridade (baixa, média, alta)
+  - Data de vencimento
+- Listagem de tarefas
+- Edição de tarefas existentes
+- Marcação de tarefas como concluídas
+- Remoção de tarefas
+- Filtros por:
+  - Estado (pendente / concluída)
+  - Prioridade
+  - Data de vencimento
+- Visualização de detalhes da tarefa
 - Interface responsiva
 - API RESTful
 - Testes automatizados
+
+## 🧱 Arquitetura
+
+- **Backend**: Laravel 12 (API REST)
+- **Frontend**: Vue 3 (componentizado)
+- **Estilização**: Tailwind CSS
+- **Base de Dados**: MySQL
+- **Comunicação**: Axios
+- **Build Frontend**: Vite
 
 ## 🛠️ Tecnologias
 - Laravel 12
